@@ -27,16 +27,6 @@ class Usuario implements UserInterface
     protected $id;
 
     /**
-     * @ORM\Column(name="name", type="string", length=150)
-     */
-    protected $name;
-
-    /**
-     * @ORM\Column(type="string", length=255, unique=true)
-     */
-    protected $email;
-
-    /**
      * @ORM\Column(name="username", type="string", length=255, unique=true)
      */
     protected $username;
@@ -74,7 +64,7 @@ class Usuario implements UserInterface
 
     public function __construct()
     {
-        $this->boards = new ArrayCollection();
+
     }
 
     /**
@@ -83,49 +73,6 @@ class Usuario implements UserInterface
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param mixed $name
-     * @return self
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Set email
-     *
-     * @param string $email
-     *
-     * @return User
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    /**
-     * Get email
-     *
-     * @return string
-     */
-    public function getEmail()
-    {
-        return $this->email;
     }
 
     /**
