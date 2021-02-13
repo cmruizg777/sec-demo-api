@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UsuarioRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use DateTime;
@@ -61,10 +62,27 @@ class Usuario implements UserInterface
      */
     protected $updatedAt;
 
+    /**
+     * @ORM\OneToOne(targetEntity=Personal::class, cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="personal", referencedColumnName="id_personal")
+     */
+    private $perfil;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Reporte::class, mappedBy="usuario")
+     */
+    private $reportes;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=PuestoTrabajo::class, mappedBy="usuario")
+     */
+    private $puestos;
+
 
     public function __construct()
     {
-
+        $this->reportes = new ArrayCollection();
+        $this->puestos = new ArrayCollection();
     }
 
     /**
@@ -208,6 +226,75 @@ class Usuario implements UserInterface
         if ($this->getCreatedAt() === null) {
             $this->setCreatedAt($dateTimeNow);
         }
+    }
+
+    public function getPerfil(): ?Personal
+    {
+        return $this->perfil;
+    }
+
+    public function setPerfil(?Personal $perfil): self
+    {
+        $this->perfil = $perfil;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Reporte[]
+     */
+    public function getReportes(): Collection
+    {
+        return $this->reportes;
+    }
+
+    public function addReporte(Reporte $reporte): self
+    {
+        if (!$this->reportes->contains($reporte)) {
+            $this->reportes[] = $reporte;
+            $reporte->setUsuario($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReporte(Reporte $reporte): self
+    {
+        if ($this->reportes->removeElement($reporte)) {
+            // set the owning side to null (unless already changed)
+            if ($reporte->getUsuario() === $this) {
+                $reporte->setUsuario(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|PuestoTrabajo[]
+     */
+    public function getPuestos(): Collection
+    {
+        return $this->puestos;
+    }
+
+    public function addPuesto(PuestoTrabajo $puesto): self
+    {
+        if (!$this->puestos->contains($puesto)) {
+            $this->puestos[] = $puesto;
+            $puesto->addUsuario($this);
+        }
+
+        return $this;
+    }
+
+    public function removePuesto(PuestoTrabajo $puesto): self
+    {
+        if ($this->puestos->removeElement($puesto)) {
+            $puesto->removeUsuario($this);
+        }
+
+        return $this;
     }
 
 }

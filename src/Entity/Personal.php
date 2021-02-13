@@ -2,13 +2,15 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Personal
  *
  * @ORM\Table(name="personal")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\PersonalRepository");
  */
 class Personal
 {
@@ -712,7 +714,7 @@ class Personal
      *
      * @ORM\Column(name="aÃ±os", type="integer", nullable=true, options={"default"="NULL"})
      */
-    private $aã±os = 'NULL';
+    private $aï¿½os = 'NULL';
 
     /**
      * @var int|null
@@ -1168,6 +1170,17 @@ class Personal
      * @ORM\Column(name="periodo_activo", type="string", length=60, nullable=false)
      */
     private $periodoActivo;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=PuestoTrabajo::class, mappedBy="personal")
+     */
+    private $puestos;
+
+    public function __construct()
+    {
+        $this->puestos = new ArrayCollection();
+    }
+
 
     public function getIdPersonal(): ?string
     {
@@ -2350,14 +2363,14 @@ class Personal
         return $this;
     }
 
-    public function getAã±os(): ?int
+    public function getAï¿½os(): ?int
     {
-        return $this->aã±os;
+        return $this->aï¿½os;
     }
 
-    public function setAã±os(?int $aã±os): self
+    public function setAï¿½os(?int $aï¿½os): self
     {
-        $this->aã±os = $aã±os;
+        $this->aï¿½os = $aï¿½os;
 
         return $this;
     }
@@ -3138,6 +3151,33 @@ class Personal
     public function setPeriodoActivo(string $periodoActivo): self
     {
         $this->periodoActivo = $periodoActivo;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|PuestoTrabajo[]
+     */
+    public function getPuestos(): Collection
+    {
+        return $this->puestos;
+    }
+
+    public function addPuesto(PuestoTrabajo $puesto): self
+    {
+        if (!$this->puestos->contains($puesto)) {
+            $this->puestos[] = $puesto;
+            $puesto->addPersonal($this);
+        }
+
+        return $this;
+    }
+
+    public function removePuesto(PuestoTrabajo $puesto): self
+    {
+        if ($this->puestos->removeElement($puesto)) {
+            $puesto->removePersonal($this);
+        }
 
         return $this;
     }
