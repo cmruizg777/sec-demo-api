@@ -19,7 +19,6 @@ class Personal
      *
      * @ORM\Column(name="id_personal", type="bigint", nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $idPersonal;
 

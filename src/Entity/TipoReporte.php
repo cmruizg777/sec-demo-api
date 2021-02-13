@@ -20,7 +20,7 @@ class TipoReporte
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=1)
+     * @ORM\Column(type="string", length=1, unique=true)
      */
     private $codigo;
 

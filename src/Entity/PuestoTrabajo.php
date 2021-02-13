@@ -25,13 +25,6 @@ class PuestoTrabajo
     private $nombre;
 
     /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     */
-    private $zona;
-
-
-
-    /**
      * @ORM\ManyToOne(targetEntity=Cliente::class, inversedBy="puestos")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -41,6 +34,16 @@ class PuestoTrabajo
      * @ORM\ManyToMany(targetEntity=Usuario::class, inversedBy="puestos")
      */
     private $usuario;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Ubicacion::class, cascade={"persist", "remove"})
+     */
+    private $ubicacion;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Provincia::class, inversedBy="puestos")
+     */
+    private $provincia;
 
     public function __construct()
     {
@@ -60,18 +63,6 @@ class PuestoTrabajo
     public function setNombre(string $nombre): self
     {
         $this->nombre = $nombre;
-
-        return $this;
-    }
-
-    public function getZona(): ?string
-    {
-        return $this->zona;
-    }
-
-    public function setZona(?string $zona): self
-    {
-        $this->zona = $zona;
 
         return $this;
     }
@@ -108,6 +99,30 @@ class PuestoTrabajo
     public function removeUsuario(Usuario $usuario): self
     {
         $this->usuario->removeElement($usuario);
+
+        return $this;
+    }
+
+    public function getUbicacion(): ?Ubicacion
+    {
+        return $this->ubicacion;
+    }
+
+    public function setUbicacion(?Ubicacion $ubicacion): self
+    {
+        $this->ubicacion = $ubicacion;
+
+        return $this;
+    }
+
+    public function getProvincia(): ?Provincia
+    {
+        return $this->provincia;
+    }
+
+    public function setProvincia(?Provincia $provincia): self
+    {
+        $this->provincia = $provincia;
 
         return $this;
     }

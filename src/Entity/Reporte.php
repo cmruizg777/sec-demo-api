@@ -12,6 +12,12 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Reporte
 {
+    public const ENTRADA        = 'E';
+    public const SALIDA         = 'S';
+    public const NOVEDAD        = 'N';
+    public const CONSIGNA       = 'C';
+    public const RECOMENDACION  = 'R';
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

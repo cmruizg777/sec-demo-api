@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Foto;
 use App\Entity\Personal;
+use App\Entity\Provincia;
 use App\Entity\Usuario;
+use App\Entity\Zona;
 use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Serializer;
 use Lexik\Bundle\JWTAuthenticationBundle\TokenExtractor\AuthorizationHeaderTokenExtractor;
@@ -126,7 +128,6 @@ class UsuarioController extends AbstractController
 
         $profile = false;
         $cargon = false;
-
         if($user){
             $em = $this->getDoctrine()->getManager();
             $id    = $user->getPerfil()->getIdCargo();
@@ -177,6 +178,7 @@ class UsuarioController extends AbstractController
         $errores_ci = [];
         $mensaje = '';
         $transaccion = [];
+        $usuarios_existentes=[];
         try {
             $contadorInserts = 0;
             /* @var $empleado Personal */
@@ -203,10 +205,8 @@ class UsuarioController extends AbstractController
                     $em->persist($user);
                     $contadorInserts++;
                     $transaccion[] = $user->getUsername();
-                    if($contadorInserts%100==0){
-                        $em->flush();
-                        $transaccion = [];
-                    }
+                    $em->flush();
+
                 }else{
                     $usuarios_existentes[] = $user->getUsername();
                     $contador++;
@@ -301,3 +301,32 @@ class UsuarioController extends AbstractController
         return new Response($serializer->serialize($response, "json"));
     }
 }
+
+
+/*
+            $zonas = [
+                "ZONA 1:Esmeraldas,Carchi,Imbabura,Sucumbíos",
+                "ZONA 2:Pichincha,Napo,Orellana",
+                "ZONA 3:Chimborazo,Tungurahua,Pastaza,Cotopaxi",
+                "ZONA 4:Manabí,Galápagos,Santo Domingo de los Tsachilas",
+                "ZONA 5:Santa Elena,Guayas,Los Ríos,Bolívar",
+                "ZONA 6:Cañar,Azuay,Morona Santiago",
+                "ZONA 7:El Oro,Loja,Zamora Chinchipe"
+            ];
+            foreach ($zonas as $zona){
+                $aZona = explode(':', $zona);
+                $zonaObj = new Zona();
+                $zonaObj->setNombre($aZona[0]);
+                $provincias = explode(',', $aZona[1]);
+                $em->persist($zonaObj);
+                $em->flush();;
+                foreach ($provincias as $provincia){
+                    $provObj = new Provincia();
+                    $provObj->setNombre($provincia);
+                    $provObj->setZona($zonaObj);
+                    $zonaObj->addProvincia($provObj);
+                    $em->persist($provObj);
+                    $em->flush();
+                }
+            }
+*/
