@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Foto;
 use App\Entity\Personal;
 use App\Entity\Provincia;
+use App\Entity\Reporte;
 use App\Entity\Usuario;
 use App\Entity\Zona;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -240,6 +241,13 @@ class UsuarioController extends AbstractController
                 $strm = fopen($file->getRealPath(),'rb');
                 $foto->setData(stream_get_contents($strm));
                 $ext = $request->request->get('extension');
+                $idr = $request->request->get('id_reporte');
+                /* @var $reporte Reporte */
+                $reporte = $entityManager->getRepository('App:Reporte')->find($idr);
+                if($reporte){
+                    $foto->setReporte($reporte);
+                    $reporte->addFoto($foto);
+                }
                 if($ext){
                     $foto->setExtension($ext);
                 }
