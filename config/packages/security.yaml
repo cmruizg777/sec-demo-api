@@ -45,7 +45,7 @@ security:
 
     access_control:
         - { path: ^/api/user/login_check,  roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        #- { path: ^/api/user/profile, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/user/profile, roles: IS_AUTHENTICATED_FULLY }
 
 
 
