@@ -38,7 +38,6 @@ class Dia
 
     public function __construct()
     {
-        $this->libres = new ArrayCollection();
         $this->asignaciones = new ArrayCollection();
     }
 
@@ -67,36 +66,6 @@ class Dia
     public function setCodigo(string $codigo): self
     {
         $this->codigo = $codigo;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Libre[]
-     */
-    public function getLibres(): Collection
-    {
-        return $this->libres;
-    }
-
-    public function addLibre(Libre $libre): self
-    {
-        if (!$this->libres->contains($libre)) {
-            $this->libres[] = $libre;
-            $libre->setDia($this);
-        }
-
-        return $this;
-    }
-
-    public function removeLibre(Libre $libre): self
-    {
-        if ($this->libres->removeElement($libre)) {
-            // set the owning side to null (unless already changed)
-            if ($libre->getDia() === $this) {
-                $libre->setDia(null);
-            }
-        }
 
         return $this;
     }
