@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 
+use App\Entity\Foto;
 use App\Entity\Reporte;
 use App\Entity\TipoReporte;
 use App\Entity\Ubicacion;
@@ -15,7 +16,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
 
 /**
- * Class UsuarioController
+ * Class ReporteController
  *
  * @Route("/api/v1/reporte")
  */
@@ -81,6 +82,44 @@ class ReporteController extends AbstractController
         $response = [
             'mensaje'=>$mensaje,
             'id'=>$id,
+        ];
+        return new Response($serializer->serialize($response, "json"));
+    }
+    /**
+     * @Rest\Post("/upload/{id}", name="upload_photo")
+     * @SWG\Response(response=200,description="OK")
+     * @SWG\Response(response=500, description="ERROR")
+     * @SWG\Parameter(name="file",in="body",type="blob")
+     * @SWG\Parameter(name="extension",in="body",type="string")
+     * @SWG\Tag(name="uploadfoto")
+     */
+    public function uploadReporteAction(Request $request, Reporte $reporte){
+        $file = $request->files->get('file');
+        $mensaje = 'OK';
+        if($file){
+            try{
+                $foto = new Foto();
+                $entityManager = $this->getDoctrine()->getManager();
+                $strm = fopen($file->getRealPath(),'rb');
+                $foto->setData(stream_get_contents($strm));
+                $ext = $request->request->get('extension');
+                $foto->setReporte($reporte);
+                $reporte->addFoto($foto);
+
+                if($ext){
+                    $foto->setExtension($ext);
+                }
+                $entityManager->persist($foto);
+                $entityManager->flush();
+            }catch (\Exception $ex){
+                $mensaje = 'Ha ocurrido un error: '.$ex->getMessage();
+            }
+        }else{
+            $mensaje = 'No se recibió ningún archivo o reporte.';
+        }
+        $serializer = $this->get('serializer');
+        $response = [
+            'mensaje'=>$mensaje
         ];
         return new Response($serializer->serialize($response, "json"));
     }

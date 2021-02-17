@@ -45,9 +45,15 @@ class PuestoTrabajo
      */
     private $provincia;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Asignacion::class, mappedBy="puesto")
+     */
+    private $asignaciones;
+
     public function __construct()
     {
         $this->usuario = new ArrayCollection();
+        $this->asignaciones = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -123,6 +129,36 @@ class PuestoTrabajo
     public function setProvincia(?Provincia $provincia): self
     {
         $this->provincia = $provincia;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Asignacion[]
+     */
+    public function getAsignaciones(): Collection
+    {
+        return $this->asignaciones;
+    }
+
+    public function addAsignacione(Asignacion $asignacione): self
+    {
+        if (!$this->asignaciones->contains($asignacione)) {
+            $this->asignaciones[] = $asignacione;
+            $asignacione->setPuesto($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAsignacione(Asignacion $asignacione): self
+    {
+        if ($this->asignaciones->removeElement($asignacione)) {
+            // set the owning side to null (unless already changed)
+            if ($asignacione->getPuesto() === $this) {
+                $asignacione->setPuesto(null);
+            }
+        }
 
         return $this;
     }

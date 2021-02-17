@@ -78,11 +78,17 @@ class Usuario implements UserInterface
      */
     private $puestos;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Asignacion::class, mappedBy="usuario")
+     */
+    private $asignaciones;
+
 
     public function __construct()
     {
         $this->reportes = new ArrayCollection();
         $this->puestos = new ArrayCollection();
+        $this->asignaciones = new ArrayCollection();
     }
 
     /**
@@ -292,6 +298,36 @@ class Usuario implements UserInterface
     {
         if ($this->puestos->removeElement($puesto)) {
             $puesto->removeUsuario($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Asignacion[]
+     */
+    public function getAsignaciones(): Collection
+    {
+        return $this->asignaciones;
+    }
+
+    public function addAsignacione(Asignacion $asignacione): self
+    {
+        if (!$this->asignaciones->contains($asignacione)) {
+            $this->asignaciones[] = $asignacione;
+            $asignacione->setUsuario($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAsignacione(Asignacion $asignacione): self
+    {
+        if ($this->asignaciones->removeElement($asignacione)) {
+            // set the owning side to null (unless already changed)
+            if ($asignacione->getUsuario() === $this) {
+                $asignacione->setUsuario(null);
+            }
         }
 
         return $this;

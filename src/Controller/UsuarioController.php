@@ -223,48 +223,6 @@ class UsuarioController extends AbstractController
         ];
         return new Response($serializer->serialize($response, "json"));
     }
-    /**
-     * @Rest\Post("/upload", name="upload_photo")
-     * @SWG\Response(response=200,description="OK")
-     * @SWG\Response(response=500, description="ERROR")
-     * @SWG\Parameter(name="file",in="body",type="blob")
-     * @SWG\Parameter(name="extension",in="body",type="string")
-     * @SWG\Tag(name="uploadfoto")
-     */
-    public function uploadReporteAction(Request $request){
-        $file = $request->files->get('file');
-        $mensaje = 'OK';
-        if($file){
-            try{
-                $foto = new Foto();
-                $entityManager = $this->getDoctrine()->getManager();
-                $strm = fopen($file->getRealPath(),'rb');
-                $foto->setData(stream_get_contents($strm));
-                $ext = $request->request->get('extension');
-                $idr = $request->request->get('id_reporte');
-                /* @var $reporte Reporte */
-                $reporte = $entityManager->getRepository('App:Reporte')->find($idr);
-                if($reporte){
-                    $foto->setReporte($reporte);
-                    $reporte->addFoto($foto);
-                }
-                if($ext){
-                    $foto->setExtension($ext);
-                }
-                $entityManager->persist($foto);
-                $entityManager->flush();
-            }catch (\Exception $ex){
-                throw($ex);
-            }
-        }else{
-            $mensaje = 'Ningun archivo recibido';
-        }
-        $serializer = $this->get('serializer');
-        $response = [
-            'mensaje'=>$mensaje
-        ];
-        return new Response($serializer->serialize($response, "json"));
-    }
 
     /**
      * @Rest\Get("/download", name="down_photo")
