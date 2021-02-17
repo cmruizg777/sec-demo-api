@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Asignacion;
+use App\Entity\Usuario;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -19,22 +20,23 @@ class AsignacionRepository extends ServiceEntityRepository
         parent::__construct($registry, Asignacion::class);
     }
 
-    // /**
-    //  * @return Asignacion[] Returns an array of Asignacion objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @param $user Usuario
+     * @return Asignacion[]
+     */
+    public function findByUser($user)
     {
         return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
+            ->andWhere('a.usuario = :user')
+            ->andWhere('a.inicio <= :fecha')
+            ->andWhere('a.fin >= :fecha')
+            ->setParameter('user', $user->getId())
+            ->setParameter('fecha', new \DateTime('now'))
             ->orderBy('a.id', 'ASC')
-            ->setMaxResults(10)
             ->getQuery()
             ->getResult()
         ;
     }
-    */
 
     /*
     public function findOneBySomeField($value): ?Asignacion

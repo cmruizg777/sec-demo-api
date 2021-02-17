@@ -136,11 +136,13 @@ class UsuarioController extends AbstractController
             $profile = $serializer->normalize($user, null,
                 [AbstractNormalizer::ATTRIBUTES =>
                     [
+                        'id',
                         'username',
                         'perfil'=>[
-                        'nombres',
-                        'apellidos'
-                    ]]]);
+                            'id_personal',
+                            'nombres',
+                            'apellidos'
+                        ]]]);
             $cargon = $serializer->normalize($cargo, null,
                 [AbstractNormalizer::ATTRIBUTES =>
                     [
