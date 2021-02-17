@@ -31,9 +31,9 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        #main:
-        #    anonymous: true
-
+        main:
+            anonymous: true
+                #Lexik\Bundle\JWTAuthenticationBundle\Security\Guard\JWTTokenAuthenticator
                 # activate different ways to authenticate
                 # https://symfony.com/doc/current/security.html#firewalls-authentication
 
