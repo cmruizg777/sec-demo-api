@@ -29,12 +29,6 @@ class PuestoTrabajo
      * @ORM\JoinColumn(nullable=false)
      */
     private $cliente;
-
-    /**
-     * @ORM\ManyToMany(targetEntity=Usuario::class, inversedBy="puestos")
-     */
-    private $usuario;
-
     /**
      * @ORM\OneToOne(targetEntity=Ubicacion::class, cascade={"persist", "remove"})
      */
@@ -52,7 +46,7 @@ class PuestoTrabajo
 
     public function __construct()
     {
-        $this->usuario = new ArrayCollection();
+
         $this->asignaciones = new ArrayCollection();
     }
 
@@ -81,30 +75,6 @@ class PuestoTrabajo
     public function setCliente(?Cliente $cliente): self
     {
         $this->cliente = $cliente;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Usuario[]
-     */
-    public function getUsuario(): Collection
-    {
-        return $this->usuario;
-    }
-
-    public function addUsuario(Usuario $usuario): self
-    {
-        if (!$this->usuario->contains($usuario)) {
-            $this->usuario[] = $usuario;
-        }
-
-        return $this;
-    }
-
-    public function removeUsuario(Usuario $usuario): self
-    {
-        $this->usuario->removeElement($usuario);
 
         return $this;
     }

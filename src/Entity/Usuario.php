@@ -73,10 +73,7 @@ class Usuario implements UserInterface
      */
     private $reportes;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=PuestoTrabajo::class, mappedBy="usuario")
-     */
-    private $puestos;
+
 
     /**
      * @ORM\OneToMany(targetEntity=Asignacion::class, mappedBy="usuario")
@@ -87,7 +84,6 @@ class Usuario implements UserInterface
     public function __construct()
     {
         $this->reportes = new ArrayCollection();
-        $this->puestos = new ArrayCollection();
         $this->asignaciones = new ArrayCollection();
     }
 
@@ -276,32 +272,6 @@ class Usuario implements UserInterface
         return $this;
     }
 
-    /**
-     * @return Collection|PuestoTrabajo[]
-     */
-    public function getPuestos(): Collection
-    {
-        return $this->puestos;
-    }
-
-    public function addPuesto(PuestoTrabajo $puesto): self
-    {
-        if (!$this->puestos->contains($puesto)) {
-            $this->puestos[] = $puesto;
-            $puesto->addUsuario($this);
-        }
-
-        return $this;
-    }
-
-    public function removePuesto(PuestoTrabajo $puesto): self
-    {
-        if ($this->puestos->removeElement($puesto)) {
-            $puesto->removeUsuario($this);
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection|Asignacion[]
