@@ -24,6 +24,7 @@ security:
         api:
             pattern:   ^/api
             stateless: true
+            anonymous: ~
             provider: app_user_provider
             guard:
                 authenticators:
@@ -45,6 +46,7 @@ security:
 
     access_control:
         - { path: ^/api/user/login_check,  roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/doc.json,  roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/user/profile, roles: IS_AUTHENTICATED_FULLY }
 
 

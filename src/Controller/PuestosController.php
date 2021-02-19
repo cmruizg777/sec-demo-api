@@ -28,7 +28,7 @@ class PuestosController extends AbstractController
      * @Rest\Get("/", name="get_puestos")
      * @SWG\Response(response=200,description="OK")
      * @SWG\Response(response=500, description="ERROR")
-     * @SWG\Tag(name="get_puestos")
+     * @SWG\Tag(name="Obtener Asignaciones de puestos de Trabajo")
      */
     public function getPuestosAction(Request $request){
         $serializer = $this->get('serializer');

@@ -2,24 +2,14 @@
 
 namespace App\Controller;
 
-use App\Entity\Foto;
 use App\Entity\Personal;
-use App\Entity\Provincia;
-use App\Entity\Reporte;
 use App\Entity\Usuario;
-use App\Entity\Zona;
-use Doctrine\Common\Collections\ArrayCollection;
-use JMS\Serializer\Serializer;
-use Lexik\Bundle\JWTAuthenticationBundle\TokenExtractor\AuthorizationHeaderTokenExtractor;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Config\Definition\Exception\Exception;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\File\Stream;
-use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
@@ -38,16 +28,20 @@ class UsuarioController extends AbstractController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="User was logged in successfully"
+     *     description="Devuelve un token",
+     *     @SWG\Schema(
+     *          type="string",
+     *          @SWG\Items(title = "token", format="eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.eyJpYXQiOjE2MTM2ODQ4MTgsImV4cCI6MTYxMzY4ODQxOCwicm9sZXMiOltdLCJ1c2VybmFtZSI6IjEwMDM2NTk5...")
+     *     )
      * )
      *
      * @SWG\Response(
      *     response=500,
-     *     description="User was not logged in successfully"
+     *     description="El usuario no se pudo loguear"
      * )
      *
      * @SWG\Parameter(
-     *     name="_username",
+     *     name="username",
      *     in="body",
      *     type="string",
      *     description="The username",
@@ -56,26 +50,29 @@ class UsuarioController extends AbstractController
      * )
      *
      * @SWG\Parameter(
-     *     name="_password",
+     *     name="password",
      *     in="body",
      *     type="string",
      *     description="The password",
      *     schema={}
      * )
      *
-     * @SWG\Tag(name="Usuario")
+     * @SWG\Tag(name="Iniciar Sesión")
      */
-    public function getLoginCheckAction() {}
+    public function getLoginCheckAction() {
 
-    /**
-     * @Rest\Post("/register", name="user_register")
-     *
-     * @SWG\Response(response=201,description="User was successfully registered")
-     * @SWG\Response(response=500,description="User was not successfully registered")
-     * @SWG\Parameter(name="_username",in="body",type="string",description="The username",schema={})
-     * @SWG\Parameter(name="_password",in="query",type="string",description="The password")
-     * @SWG\Tag(name="Usuario")
-     */
+    }
+
+    //**
+     //* @Rest\Post("/register", name="user_register")
+     //*
+     //* @SWG\Response(response=201,description="User was successfully registered")
+     //* @SWG\Response(response=500,description="User was not successfully registered")
+     //* @SWG\Parameter(name="_username",in="body",type="string",description="The username",schema={})
+     //* @SWG\Parameter(name="_password",in="query",type="string",description="The password")
+     //* @SWG\Tag(name="Usuario")
+     //*/
+    /*
     public function registerAction(Request $request, UserPasswordEncoderInterface $encoder) {
         $serializer = $this->get('serializer');
         $em = $this->getDoctrine()->getManager();
@@ -115,12 +112,19 @@ class UsuarioController extends AbstractController
         ];
 
         return new Response($serializer->serialize($response, "json"));
-    }
+    }*/
     /**
      * @Rest\Post("/profile", name="user_profile")
-     * @SWG\Response(response=201,description="OK")
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the rewards of an user",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Usuario::class))
+     *     )
+     * )
      * @SWG\Response(response=500,description="ERROR")
-     * @SWG\Tag(name="Usuario_Profile")
+     * @SWG\Tag(name="Perfil del Usuario")
      */
     public function profileAction(Request $request) {
         $serializer = $this->get('serializer');
@@ -158,116 +162,8 @@ class UsuarioController extends AbstractController
         ];
         return new Response($serializer->serialize($response, "json"));
     }
-    /**
-     * @Rest\Get("/sincronizar", name="sincronizar_usuarios")
-     * @SWG\Response(response=200,description="Sincronizacion exitoza")
-     * @SWG\Response(response=500, description="Ha ocurrido un error")
-     * @SWG\Parameter(name="limit",in="query",type="string",description="inicio id")
-     * @SWG\Parameter(name="offset",in="query",type="string",description="fin id")
-     * @SWG\Tag(name="sincronizarusuarios")
-     */
-    public function sincronizarAction(Request $request, UserPasswordEncoderInterface $encoder) {
-        $serializer = $this->get('serializer');
-        $em = $this->getDoctrine()->getManager();
-        $limit = $request->get('limit');
-        $offset = $request->get('offset');
-        $empleados = $em->getRepository('App:Personal')->findBy(
-            array(),
-            array('idPersonal' => 'DESC'),
-            $limit,
-            $offset
-        );
-        $contador = 0;
-        $errores_ci = [];
-        $mensaje = '';
-        $transaccion = [];
-        $usuarios_existentes=[];
-        try {
-            $contadorInserts = 0;
-            /* @var $empleado Personal */
-            foreach ($empleados as $empleado){
-                $user = new Usuario();
-                $user->setUsername($empleado->getCedula());
 
-                $exist2 = $em->getRepository('App:Usuario')->findBy(['username'=>$user->getUsername()]);
-                $exist = array_search($user->getUsername(), $transaccion);
-                if(!$exist2 && $exist === false ){
-                    $pass = '123456';
-                    $idcargo = $empleado->getIdCargo();
-                    $roles = [];
-                    if($idcargo == 10){
-                        $roles[]='ROLE_GUARDIA';
-                    }
-                    if($idcargo == 11){
-                        $roles[]='ROLE_SUPERVISOR';
-                    }
-                    $user->setRoles($roles);
-                    $user->setCreatedAt(new \DateTime('now'));
-                    $user->setPerfil($empleado);
-                    $user->setPassword($encoder->encodePassword($user, $pass));
-                    $em->persist($user);
-                    $contadorInserts++;
-                    $transaccion[] = $user->getUsername();
-                    $em->flush();
 
-                }else{
-                    $usuarios_existentes[] = $user->getUsername();
-                    $contador++;
-                }
-            }
-        }catch (\Exception $ex){
-            $mensaje = $ex->getMessage();
-        }
-        $response = [
-            'numero de errores' => $contador,
-            'usuarios_existente' => $usuarios_existentes,
-            'excepcion' => $mensaje
-        ];
-        return new Response($serializer->serialize($response, "json"));
-    }
-
-    /**
-     * @Rest\Get("/download", name="down_photo")
-     * @SWG\Response(response=200,description="OK")
-     * @SWG\Response(response=500, description="ERROR")
-     * @SWG\Parameter(name="id",in="body",type="id")
-     * @SWG\Tag(name="downloadfoto")
-     */
-    public function downloadReporteAction(Request $request){
-        $id = $request->get('id');
-        $mensaje = 'OK';
-        $data = [];
-        if($id){
-            try{
-                $entityManager = $this->getDoctrine()->getManager();
-                /* @var $foto Foto */
-                $foto = $entityManager->getRepository('App:Foto')->find($id);
-                if($foto){
-                    $data = $foto->getData();
-                    $response = new Response(stream_get_contents($data));
-                    $filename = $foto->getId().'.'.$foto->getExtension();
-                    $disposition = HeaderUtils::makeDisposition(
-                        HeaderUtils::DISPOSITION_ATTACHMENT,
-                        $filename
-                    );
-
-                    $response->headers->set('Content-Disposition', $disposition);
-
-                    return $response;
-                }
-            }catch (\Exception $ex){
-                throw($ex);
-            }
-        }else{
-            $mensaje = 'Ningun archivo recibido';
-        }
-        $serializer = $this->get('serializer');
-        $response = [
-            'mensaje'=>$mensaje,
-            'data'=> $data
-        ];
-        return new Response($serializer->serialize($response, "json"));
-    }
 }
 
 
@@ -297,4 +193,75 @@ class UsuarioController extends AbstractController
                     $em->flush();
                 }
             }
+
 */
+
+
+///**
+ //* @Rest\Get("/sincronizar", name="sincronizar_usuarios")
+ //* @SWG\Response(response=200,description="Sincronizacion exitoza")
+ //* @SWG\Response(response=500, description="Ha ocurrido un error")
+ //* @SWG\Parameter(name="limit",in="query",type="string",description="inicio id")
+ //* @SWG\Parameter(name="offset",in="query",type="string",description="fin id")
+ //* @SWG\Tag(name="sincronizarusuarios")
+ //*/
+/*
+public function sincronizarAction(Request $request, UserPasswordEncoderInterface $encoder) {
+    $serializer = $this->get('serializer');
+    $em = $this->getDoctrine()->getManager();
+    $limit = $request->get('limit');
+    $offset = $request->get('offset');
+    $empleados = $em->getRepository('App:Personal')->findBy(
+        array(),
+        array('idPersonal' => 'DESC'),
+        $limit,
+        $offset
+    );
+    $contador = 0;
+    $errores_ci = [];
+    $mensaje = '';
+    $transaccion = [];
+    $usuarios_existentes=[];
+    try {
+        $contadorInserts = 0;
+
+        foreach ($empleados as $empleado){
+            $user = new Usuario();
+            $user->setUsername($empleado->getCedula());
+
+            $exist2 = $em->getRepository('App:Usuario')->findBy(['username'=>$user->getUsername()]);
+            $exist = array_search($user->getUsername(), $transaccion);
+            if(!$exist2 && $exist === false ){
+                $pass = '123456';
+                $idcargo = $empleado->getIdCargo();
+                $roles = [];
+                if($idcargo == 10){
+                    $roles[]='ROLE_GUARDIA';
+                }
+                if($idcargo == 11){
+                    $roles[]='ROLE_SUPERVISOR';
+                }
+                $user->setRoles($roles);
+                $user->setCreatedAt(new \DateTime('now'));
+                $user->setPerfil($empleado);
+                $user->setPassword($encoder->encodePassword($user, $pass));
+                $em->persist($user);
+                $contadorInserts++;
+                $transaccion[] = $user->getUsername();
+                $em->flush();
+
+            }else{
+                $usuarios_existentes[] = $user->getUsername();
+                $contador++;
+            }
+        }
+    }catch (\Exception $ex){
+        $mensaje = $ex->getMessage();
+    }
+    $response = [
+        'numero de errores' => $contador,
+        'usuarios_existente' => $usuarios_existentes,
+        'excepcion' => $mensaje
+    ];
+    return new Response($serializer->serialize($response, "json"));
+}*/

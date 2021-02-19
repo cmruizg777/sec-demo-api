@@ -1,8 +1,8 @@
 nelmio_api_doc:
     documentation:
         info:
-            title: Sindicato de choferes Cantón Espejo
-            description: API Rest Generador de Turnos del sindicato de choferes del ccantón espejo
+            title: SECURITY API DEMO
+            description: API Rest para la gestión de una empresa de vigilancia y seguridad
             version: 1.0.0
     areas: # to filter documented areas
         path_patterns:

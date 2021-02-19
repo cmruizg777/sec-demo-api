@@ -27,12 +27,12 @@ class ReporteController extends AbstractController
      * @Rest\Post("/entrada", name="reportar")
      * @SWG\Response(response=200,description="OK")
      * @SWG\Response(response=500, description="ERROR")
-     * @SWG\Parameter(name="descripcion",in="body",type="string")
-     * @SWG\Parameter(name="latitud",in="body",type="float")
-     * @SWG\Parameter(name="longitud",in="body",type="float")
-     * @SWG\Parameter(name="precisiongps",in="body",type="float")
-     * @SWG\Parameter(name="velocidad",in="body",type="float")
-     * @SWG\Tag(name="entrada")
+     * @SWG\Parameter(name="descripcion",in="body", @SWG\Schema(type="string"))
+     * @SWG\Parameter(name="latitud",in="body", @SWG\Schema(type="float"))
+     * @SWG\Parameter(name="longitud",in="body", @SWG\Schema(type="float"))
+     * @SWG\Parameter(name="precisiongps",in="body", @SWG\Schema(type="float"))
+     * @SWG\Parameter(name="velocidad",in="body", @SWG\Schema(type="float"))
+     * @SWG\Tag(name="Generar Reporte")
      */
     public function entradaAction(Request $request){
         $id = 0;
@@ -85,42 +85,5 @@ class ReporteController extends AbstractController
         ];
         return new Response($serializer->serialize($response, "json"));
     }
-    /**
-     * @Rest\Post("/upload/{id}", name="upload_photo")
-     * @SWG\Response(response=200,description="OK")
-     * @SWG\Response(response=500, description="ERROR")
-     * @SWG\Parameter(name="file",in="body",type="blob")
-     * @SWG\Parameter(name="extension",in="body",type="string")
-     * @SWG\Tag(name="uploadfoto")
-     */
-    public function uploadReporteAction(Request $request, Reporte $reporte){
-        $file = $request->files->get('file');
-        $mensaje = 'OK';
-        if($file){
-            try{
-                $foto = new Foto();
-                $entityManager = $this->getDoctrine()->getManager();
-                $strm = fopen($file->getRealPath(),'rb');
-                $foto->setData(stream_get_contents($strm));
-                $ext = $request->request->get('extension');
-                $foto->setReporte($reporte);
-                $reporte->addFoto($foto);
 
-                if($ext){
-                    $foto->setExtension($ext);
-                }
-                $entityManager->persist($foto);
-                $entityManager->flush();
-            }catch (\Exception $ex){
-                $mensaje = 'Ha ocurrido un error: '.$ex->getMessage();
-            }
-        }else{
-            $mensaje = 'No se recibió ningún archivo o reporte.';
-        }
-        $serializer = $this->get('serializer');
-        $response = [
-            'mensaje'=>$mensaje
-        ];
-        return new Response($serializer->serialize($response, "json"));
-    }
 }
