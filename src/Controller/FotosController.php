@@ -24,36 +24,32 @@ use Symfony\Component\Routing\Annotation\Route;
 class FotosController extends AbstractController
 {
     /**
-     * @Rest\Get("/download", name="down_photo")
+     * @Rest\Get("/download/{id}", name="down_photo")
      * @SWG\Response(response=200,description="OK")
      * @SWG\Response(response=500, description="ERROR")
      * @SWG\Parameter(name="id",in="query",type="integer", description="El id de la foto solicitada")
      * @SWG\Tag(name="Descargar Foto")
      */
-    public function downloadAction(Request $request){
-        $id = $request->get('id');
-        $mensaje = 'OK';
-        $data = [];
-        if($id){
+    public function downloadAction(Request $request, Foto $foto){
+
+
+        if($foto){
             try{
-                $entityManager = $this->getDoctrine()->getManager();
-                /* @var $foto Foto */
-                $foto = $entityManager->getRepository('App:Foto')->find($id);
-                if($foto){
-                    $data = $foto->getData();
-                    $response = new Response(stream_get_contents($data));
-                    $filename = $foto->getId().'.'.$foto->getExtension();
-                    $disposition = HeaderUtils::makeDisposition(
-                        HeaderUtils::DISPOSITION_ATTACHMENT,
-                        $filename
-                    );
 
-                    $response->headers->set('Content-Disposition', $disposition);
+                $data = $foto->getData();
+                $response = new Response(stream_get_contents($data));
+                $filename = $foto->getId().'.'.$foto->getExtension();
+                $disposition = HeaderUtils::makeDisposition(
+                    HeaderUtils::DISPOSITION_ATTACHMENT,
+                    $filename
+                );
 
-                    return $response;
-                }
+                $response->headers->set('Content-Disposition', $disposition);
+
+                return $response;
+
             }catch (\Exception $ex){
-                throw($ex);
+                $mensaje = $ex->getMessage();
             }
         }else{
             $mensaje = 'Ningun archivo recibido';
@@ -61,7 +57,6 @@ class FotosController extends AbstractController
         $serializer = $this->get('serializer');
         $response = [
             'mensaje'=>$mensaje,
-            'data'=> $data
         ];
         return new Response($serializer->serialize($response, "json"));
     }

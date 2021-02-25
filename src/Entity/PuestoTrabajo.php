@@ -44,10 +44,16 @@ class PuestoTrabajo
      */
     private $asignaciones;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Reporte::class, mappedBy="puesto")
+     */
+    private $reportes;
+
     public function __construct()
     {
 
         $this->asignaciones = new ArrayCollection();
+        $this->reportes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -104,7 +110,7 @@ class PuestoTrabajo
     }
 
     /**
-     * @return Collection|Asignacion[]
+     * @return ArrayCollection|Asignacion[]
      */
     public function getAsignaciones(): Collection
     {
@@ -127,6 +133,36 @@ class PuestoTrabajo
             // set the owning side to null (unless already changed)
             if ($asignacione->getPuesto() === $this) {
                 $asignacione->setPuesto(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return ArrayCollection|Reporte[]
+     */
+    public function getReportes(): Collection
+    {
+        return $this->reportes;
+    }
+
+    public function addReporte(Reporte $reporte): self
+    {
+        if (!$this->reportes->contains($reporte)) {
+            $this->reportes[] = $reporte;
+            $reporte->setPuesto($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReporte(Reporte $reporte): self
+    {
+        if ($this->reportes->removeElement($reporte)) {
+            // set the owning side to null (unless already changed)
+            if ($reporte->getPuesto() === $this) {
+                $reporte->setPuesto(null);
             }
         }
 

@@ -51,6 +51,8 @@ class Asignacion
      */
     private $puesto;
 
+
+
     public function __construct()
     {
         $this->dias = new ArrayCollection();

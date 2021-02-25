@@ -52,6 +52,22 @@ class Reporte
      */
     private $usuario;
 
+    /**
+     * @ORM\Column(type="date")
+     */
+    private $fecha;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=PuestoTrabajo::class, inversedBy="reportes")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $puesto;
+
+    /**
+     * @ORM\Column(type="time")
+     */
+    private $hora;
+
     public function __construct()
     {
         $this->fotos = new ArrayCollection();
@@ -139,4 +155,41 @@ class Reporte
 
         return $this;
     }
+
+    public function getFecha(): ?\DateTimeInterface
+    {
+        return $this->fecha;
+    }
+
+    public function setFecha(\DateTimeInterface $fecha): self
+    {
+        $this->fecha = $fecha;
+
+        return $this;
+    }
+
+    public function getPuesto(): ?PuestoTrabajo
+    {
+        return $this->puesto;
+    }
+
+    public function setPuesto(?PuestoTrabajo $puesto): self
+    {
+        $this->puesto = $puesto;
+
+        return $this;
+    }
+
+    public function getHora(): ?\DateTimeInterface
+    {
+        return $this->hora;
+    }
+
+    public function setHora(\DateTimeInterface $hora): self
+    {
+        $this->hora = $hora;
+
+        return $this;
+    }
+
 }

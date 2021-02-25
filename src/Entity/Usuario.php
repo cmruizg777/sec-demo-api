@@ -303,4 +303,8 @@ class Usuario implements UserInterface
         return $this;
     }
 
+    public function getNombreCompleto(){
+        return $this->getPerfil()->getNombres().' '.$this->getPerfil()->getApellidos();
+    }
+
 }

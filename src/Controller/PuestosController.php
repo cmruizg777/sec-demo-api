@@ -42,6 +42,7 @@ class PuestosController extends AbstractController
                     [
                         'id',
                         'puesto' => [
+                            'id',
                             'nombre',
                             'provincia'=>[
                                 'nombre'
